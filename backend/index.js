@@ -9,13 +9,19 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+var opt = {
+  n:20,
+  lang:'ID',
+  raw:true
+}
 
 
 
 app.post('/summarize', async (req, res) => {
   const { Text } = req.body;
   console.log(Text)
- var summary =  summarizefy(Text)
+ var summary =  summarizefy(Text,opt)
+ console.log(summary)
 
   res.json({ summary });
 });
