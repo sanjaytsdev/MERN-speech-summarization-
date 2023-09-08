@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 var opt = {
-  n:20,
+  n:12,
   lang:'ID',
   raw:true
 }
