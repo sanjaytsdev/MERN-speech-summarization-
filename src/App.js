@@ -1,119 +1,108 @@
-import React, { useState, useEffect } from 'react'
-import { saveAs } from 'file-saver'
-import axios from 'axios'
+import React, { useState, useEffect } from "react";
+import { saveAs } from "file-saver";
+import axios from "axios";
 
 const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition
-const mic = new SpeechRecognition()
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+const mic = new SpeechRecognition();
 
-mic.continuous = true
-mic.interimResults = true
+mic.continuous = true;
+mic.interimResults = true;
 // language
-mic.lang = 'en-IN'
+mic.lang = "en-IN";
 
 function App() {
-  const [isListening, setIsListening] = useState(false)
+  const [isListening, setIsListening] = useState(false);
   //Recorded Voice is Saved in Note (1st Box)
-  const [note, setNote] = useState(null)
+  const [note, setNote] = useState(null);
   // After clicking save text button in 1st box the text is stored in savedNotes and displayed in 2nd box.
   //Variable to be passes to summarize : savedNotes
-  const [savedNotes, setSavedNotes] = useState(['India is a country where cricket is watched by many people. The 1983 Cricket world cup changed the perspective of many people in India. For others, cricket might just be a sport in which one team loses and the other wins but for us Indians cricket is everything and it has been followed by some crazy fans as a religion. We often hear the term ‘Cricket is a religion in India and Sachin is God’. '])
-  // To toogle the state of start or stop button 
-  const [state, setState] = useState(false)
+  const [savedNotes, setSavedNotes] = useState([
+    "Engineering is a field of boundless innovation and problem-solving that shapes the world we live in. Engineers are the architects of progress, designing and building the infrastructure, technology, and solutions that drive society forward. Whether it's civil engineers constructing towering skyscrapers and intricate bridges, electrical engineers revolutionizing communication and energy systems, or software engineers developing the digital tools of tomorrow, their work touches every aspect of our lives. Beyond the technical expertise, engineers possess a unique ability to tackle complex challenges with creativity and precision, seeking sustainable solutions that improve the quality of life for all. In an ever-evolving world, engineering remains a driving force, continuously pushing the boundaries of what is possible and inspiring generations to dream, innovate, and build a brighter future."
+  ])
+  // To toogle the state of start or stop button
+  const [state, setState] = useState(false);
   //For saving as .txt
-  const textToSave = savedNotes
+  const textToSave = savedNotes;
 
-
-   // To set summarize
-   const [summarize,setSummarize]= useState(null)
+  // To set summarize
+  const [summarize, setSummarize] = useState(null);
 
   const Toggle = () => {
-    setState(!state)
-  }
+    setState(!state);
+  };
 
   const Clear = () => {
-    setSavedNotes([])
-  }
+    setSavedNotes([]);
+  };
 
   const clear = () => {
-    setNote([])
-  }
+    setNote([]);
+  };
 
   useEffect(() => {
-
     const handleListen = () => {
       if (isListening) {
-        mic.start()
+        mic.start();
         mic.onend = () => {
-          console.log('continue..')
-          mic.start()
-        }
+          console.log("continue..");
+          mic.start();
+        };
       } else {
-        mic.stop()
+        mic.stop();
         mic.onend = () => {
-          console.log('Stopped Mic on Click')
-        }
+          console.log("Stopped Mic on Click");
+        };
       }
       mic.onstart = () => {
-        console.log('Mics on')
-      }
+        console.log("Mics on");
+      };
 
-      mic.onresult = event => {
+      mic.onresult = (event) => {
         const transcript = Array.from(event.results)
-          .map(result => result[0])
-          .map(result => result.transcript)
-          .join('')
-        console.log(transcript)
-        setNote(transcript)
-        mic.onerror = event => {
-          console.log(event.error)
-        }
-      }
-    }
+          .map((result) => result[0])
+          .map((result) => result.transcript)
+          .join("");
+        console.log(transcript);
+        setNote(transcript);
+        mic.onerror = (event) => {
+          console.log(event.error);
+        };
+      };
+    };
 
-    handleListen()
-  }, [isListening])
+    handleListen();
+  }, [isListening]);
 
   function saveToFile(text) {
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
-    saveAs(blob, 'file.txt')
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "file.txt");
   }
-
-
 
   const handleSaveNote = () => {
-    setSavedNotes([...savedNotes, note])
+    setSavedNotes([...savedNotes, note]);
 
-    
-    setNote('')
-  }
+    setNote("");
+  };
 
-  //To summarize the given text 
-  const summarizeText = async() => {
-    const textToSummarize = savedNotes[0];
-    const response = await axios.post('http://localhost:5000/summarize', {
-      Text: textToSummarize,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
+  //To summarize the given text
+  const summarizeText = async () => {
+    const textToSummarize = savedNotes;
+    const response = await axios.post(
+      "http://localhost:5000/summarize",
+      {
+        Text: textToSummarize,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     // Handle the response, e.g., log the summarized text
-    const data =response.data.summary
-    let concatenatedText = ''
-    data.forEach((item) => {
-      if (item.text) {
-        concatenatedText += item.text + ' '; // Add a space between text from different objects
-      }
-    });
-  
-    
-    
-   setSummarize(concatenatedText)
-
-  }
-
+     setSummarize(response.data)
+  };
 
   return (
     <>
@@ -125,7 +114,12 @@ function App() {
           <button onClick={handleSaveNote} disabled={!note}>
             Save text
           </button>
-          <button onClick={() => { setIsListening(prevState => !prevState); Toggle() }}>
+          <button
+            onClick={() => {
+              setIsListening((prevState) => !prevState);
+              Toggle();
+            }}
+          >
             {state ? "Stop " : "Start"}
           </button>
           <button onClick={clear} disabled={!note}>
@@ -135,24 +129,24 @@ function App() {
         </div>
         <div className="box">
           <h2>Saved Text</h2>
-          <button onClick={() => { summarizeText() }}>
+          <button
+            onClick={() => {
+              summarizeText();
+            }}
+          >
             Summarize
           </button>
-          <button onClick={Clear}>
-            Clear
-          </button>
+          <button onClick={Clear}>Clear</button>
           <button onClick={() => saveToFile(textToSave)} disabled={!savedNotes}>
             Save
           </button>
-          {savedNotes.map(n => (
+          {savedNotes.map((n) => (
             <p key={n}>{n}</p>
           ))}
         </div>
         <div className="box">
           <h2>Summarize</h2>
-          <button>
-            Translate
-          </button>
+          <button>Translate</button>
           <button onClick={() => saveToFile(textToSave)} disabled={!savedNotes}>
             Save
           </button>
@@ -166,7 +160,7 @@ function App() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

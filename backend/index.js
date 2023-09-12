@@ -1,7 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-var summarizefy = require("summarizefy")
-
+const express = require("express");
+const cors = require("cors");
+var summarizefy = require("summarizefy");
+const { PythonShell } = require("python-shell");
+const { text } = require("body-parser");
 
 const port = 5000;
 const app = express();
@@ -9,21 +10,26 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-var opt = {
-  n:12,
-  lang:'ID',
-  raw:true
-}
 
-
-
-app.post('/summarize', async (req, res) => {
+app.post("/summarize", async (req, res) => {
   const { Text } = req.body;
-  console.log(Text)
- var summary =  summarizefy(Text,opt)
- console.log(summary)
+  
+  let options = {
+    mode: "text",
+    scriptPath: "./", 
+    args: [Text], 
+  };
 
-  res.json({ summary });
+  let response = await PythonShell.run("index.py", options, function (err, result) {
+    if (err) throw err;
+    else{
+      console.log("result: ", result);
+      console.log("ho")
+    }
+  });
+
+  
+  res.send(response[0])
 });
 
 app.listen(port, () => {
