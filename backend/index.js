@@ -24,7 +24,7 @@ app.post("/summarize", async (req, res) => {
     if (err) throw err;
     else{
       console.log("result: ", result);
-      console.log("ho")
+
     }
   });
 
