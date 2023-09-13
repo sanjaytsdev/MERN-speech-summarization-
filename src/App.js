@@ -17,13 +17,13 @@ function App() {
   const [note, setNote] = useState(null);
   // After clicking save text button in 1st box the text is stored in savedNotes and displayed in 2nd box.
   //Variable to be passes to summarize : savedNotes
-  const [savedNotes, setSavedNotes] = useState([
-    "Engineering is a field of boundless innovation and problem-solving that shapes the world we live in. Engineers are the architects of progress, designing and building the infrastructure, technology, and solutions that drive society forward. Whether it's civil engineers constructing towering skyscrapers and intricate bridges, electrical engineers revolutionizing communication and energy systems, or software engineers developing the digital tools of tomorrow, their work touches every aspect of our lives. Beyond the technical expertise, engineers possess a unique ability to tackle complex challenges with creativity and precision, seeking sustainable solutions that improve the quality of life for all. In an ever-evolving world, engineering remains a driving force, continuously pushing the boundaries of what is possible and inspiring generations to dream, innovate, and build a brighter future."
+  const [savedNotes, setSavedNotes] = useState(["Engineering is a field of boundless innovation and problem-solving that shapes the world we live in. Engineers are the architects of progress, designing and building the infrastructure, technology, and solutions that drive society forward. Whether it's civil engineers constructing towering skyscrapers and intricate bridges, electrical engineers revolutionizing communication and energy systems, or software engineers developing the digital tools of tomorrow, their work touches every aspect of our lives. Beyond the technical expertise, engineers possess a unique ability to tackle complex challenges with creativity and precision, seeking sustainable solutions that improve the quality of life for all. In an ever-evolving world, engineering remains a driving force, continuously pushing the boundaries of what is possible and inspiring generations to dream, innovate, and build a brighter future."
   ])
   // To toogle the state of start or stop button
   const [state, setState] = useState(false);
   //For saving as .txt
   const textToSave = savedNotes;
+  const pause=0
 
   // To set summarize
   const [summarize, setSummarize] = useState(null);
@@ -38,6 +38,14 @@ function App() {
 
   const clear = () => {
     setNote([]);
+  };
+
+  const clr = () => {
+    setSummarize([]);
+  };
+
+  const Clr = () => {
+    
   };
 
   useEffect(() => {
@@ -65,6 +73,9 @@ function App() {
           .join("");
         console.log(transcript);
         setNote(transcript);
+
+
+        
         mic.onerror = (event) => {
           console.log(event.error);
         };
@@ -110,6 +121,14 @@ function App() {
       <div className="container">
         <div className="box">
           <h2>Current speech text</h2>
+          <label>
+              Language:
+            <select>
+            <option>English</option>
+            <option>Malayalam</option>
+            <option>Hindi</option>
+            </select>
+            </label>
           {isListening ? <span>🎙️Recording....</span> : <span>🛑🎙️</span>}
           <button onClick={handleSaveNote} disabled={!note}>
             Save text
@@ -136,7 +155,7 @@ function App() {
           >
             Summarize
           </button>
-          <button onClick={Clear}>Clear</button>
+          <button onClick={Clear} disabled={!savedNotes}>Clear</button>
           <button onClick={() => saveToFile(textToSave)} disabled={!savedNotes}>
             Save
           </button>
@@ -146,8 +165,8 @@ function App() {
         </div>
         <div className="box">
           <h2>Summarize</h2>
-          <button>Translate</button>
-          <button onClick={() => saveToFile(textToSave)} disabled={!savedNotes}>
+          <button onClick={clr} disabled={!summarize}>Clear</button>
+          <button onClick={() => saveToFile(textToSave)} disabled={!summarize}>
             Save
           </button>
           <p>{summarize}</p>
@@ -157,6 +176,20 @@ function App() {
           <button onClick={() => saveToFile(textToSave)} disabled={!savedNotes}>
             Save
           </button>
+          <button>
+            Translate
+          </button>
+          <label>
+             🗣️Language:
+            <select>
+            <option>English</option>
+            <option>Malayalam</option>
+            <option>Hindi</option>
+            </select>
+            </label>
+            <button onClick={Clr}>
+            Clear
+          </button>
         </div>
       </div>
     </>
@@ -164,3 +197,5 @@ function App() {
 }
 
 export default App;
+
+// "Engineering is a field of boundless innovation and problem-solving that shapes the world we live in. Engineers are the architects of progress, designing and building the infrastructure, technology, and solutions that drive society forward. Whether it's civil engineers constructing towering skyscrapers and intricate bridges, electrical engineers revolutionizing communication and energy systems, or software engineers developing the digital tools of tomorrow, their work touches every aspect of our lives. Beyond the technical expertise, engineers possess a unique ability to tackle complex challenges with creativity and precision, seeking sustainable solutions that improve the quality of life for all. In an ever-evolving world, engineering remains a driving force, continuously pushing the boundaries of what is possible and inspiring generations to dream, innovate, and build a brighter future."
